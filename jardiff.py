@@ -54,10 +54,10 @@ def _write_infos_to_temp(temp_folder, original_stat, infos):
     os.utime(out, times)
 
 
-def _exec_diff(dir, one_path, two_path):
-  one_path = os.path.relpath(one_path, dir)
-  two_path = os.path.relpath(two_path, dir)
-  subprocess.call(['diff', '-U', '0', '-N', one_path, two_path], cwd=dir)
+def _exec_diff(base_path, one_path, two_path):
+  one_path = os.path.relpath(one_path, base_path)
+  two_path = os.path.relpath(two_path, base_path)
+  subprocess.call(['diff', '-U', '0', '-N', one_path, two_path], cwd=base_path)
 
 
 def process_archive(temp_folder, jar):
@@ -84,19 +84,19 @@ def process_archive(temp_folder, jar):
 
   return archive_folder
 
+
+def _main(old_archive, new_archive):
+  temp_folder = tempfile.mkdtemp()
+
+  old_data = process_archive(temp_folder, old_archive)
+  new_data = process_archive(temp_folder, new_archive)
+  _exec_diff(temp_folder, old_data, new_data)
+
+  shutil.rmtree(temp_folder)
+
+
 if __name__ == '__main__':
   if len(sys.argv) != 3:
     print('Usage: %s old.jar new.jar' % sys.argv[0])
     sys.exit(1)
-
-  temp_folder = tempfile.mkdtemp()
-
-  old_archive = sys.argv[1]
-  old_data = process_archive(temp_folder, old_archive)
-
-  new_archive = sys.argv[2]
-  new_data = process_archive(temp_folder, new_archive)
-
-  _exec_diff(temp_folder, old_data, new_data)
-
-  shutil.rmtree(temp_folder)
+  _main(sys.argv[1], sys.argv[2])
