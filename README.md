@@ -3,7 +3,9 @@
 `jardiff` is a Python script which quickly creates diffs of the public API
 between two JAR files. This gives you a quick diff without the overhead of a
 tool like JDiff. It also supports extracting the `classes.jar` from inside of
-Android's AAR format. 
+Android's AAR format.
+
+Both `javap` and `diff` must be available on your PATH.
 
 ```
 $ ./jardiff.py support-v4-19.0.0.jar support-v4-19.1.0.jar
