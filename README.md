@@ -1,4 +1,4 @@
-# Jardiff
+# Jar Diff
 
 `jardiff` is a Python script which quickly creates diffs of the public API
 between two JAR files. This gives you a quick diff without the overhead of a
