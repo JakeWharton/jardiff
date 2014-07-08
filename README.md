@@ -9,31 +9,24 @@ Android's AAR format.
 $ ./jardiff.py support-v4-19.0.0.jar support-v4-19.1.0.jar
 ```
 ```diff
---- support-v4-19.0.0.jar
-+++ support-v4-19.1.0.jar
-@@ -222,6 +222,7 @@
-   public abstract android.support.v4.app.Fragment getFragment(android.os.Bundle, java.lang.String);
-   public abstract java.util.List<android.support.v4.app.Fragment> getFragments();
-   public abstract android.support.v4.app.Fragment$SavedState saveFragmentInstanceState(android.support.v4.app.Fragment);
+diff -U 0 -N support-v4-19.0.0/android.support.v4.app.FragmentManager support-v4-19.1.0/android.support.v4.app.FragmentManager
+--- support-v4-19.0.0/android.support.v4.app.FragmentManager	2014-06-26 19:59:59.000000000 -0700
++++ support-v4-19.1.0/android.support.v4.app.FragmentManager	2014-06-26 19:59:59.000000000 -0700
+@@ -22,0 +23 @@
 +  public abstract boolean isDestroyed();
-   public abstract void dump(java.lang.String, java.io.FileDescriptor, java.io.PrintWriter, java.lang.String[]);
-   public static void enableDebugLogging(boolean);
- }
-@@ -743,24 +744,16 @@
-   public static final int SCALE_MODE_FILL;
-   public static final int COLOR_MODE_MONOCHROME;
-   public static final int COLOR_MODE_COLOR;
+diff -U 0 -N support-v4-19.0.0/android.support.v4.print.PrintHelper support-v4-19.1.0/android.support.v4.print.PrintHelper
+--- support-v4-19.0.0/android.support.v4.print.PrintHelper	2014-06-26 19:59:59.000000000 -0700
++++ support-v4-19.1.0/android.support.v4.print.PrintHelper	2014-06-26 19:59:59.000000000 -0700
+@@ -5,0 +6,2 @@
 +  public static final int ORIENTATION_LANDSCAPE;
 +  public static final int ORIENTATION_PORTRAIT;
-   public static boolean systemSupportsPrint();
-   public android.support.v4.print.PrintHelper(android.content.Context);
-   public void setScaleMode(int);
-   public int getScaleMode();
-   public void setColorMode(int);
-   public int getColorMode();
--  public void printBitmap(java.lang.String, android.graphics.Bitmap);
--  public void printBitmap(java.lang.String, android.net.Uri) throws java.io.FileNotFoundException;
--}
+@@ -11,0 +14,2 @@
++  public void setOrientation(int);
++  public int getOrientation();
+diff -U 0 -N support-v4-19.0.0/android.support.v4.print.PrintHelperKitkat support-v4-19.1.0/android.support.v4.print.PrintHelperKitkat
+--- support-v4-19.0.0/android.support.v4.print.PrintHelperKitkat	2014-06-26 19:59:59.000000000 -0700
++++ support-v4-19.1.0/android.support.v4.print.PrintHelperKitkat	1969-12-31 16:00:00.000000000 -0800
+@@ -1,12 +0,0 @@
 -public class android.support.v4.print.PrintHelperKitkat {
 -  public static final int SCALE_MODE_FIT;
 -  public static final int SCALE_MODE_FILL;
@@ -43,27 +36,19 @@ $ ./jardiff.py support-v4-19.0.0.jar support-v4-19.1.0.jar
 -  public int getScaleMode();
 -  public void setColorMode(int);
 -  public int getColorMode();
-+  public void setOrientation(int);
-+  public int getOrientation();
-   public void printBitmap(java.lang.String, android.graphics.Bitmap);
-   public void printBitmap(java.lang.String, android.net.Uri) throws java.io.FileNotFoundException;
- }
-@@ -1585,6 +1578,8 @@
-   public void setDrawerLockMode(int, android.view.View);
-   public int getDrawerLockMode(int);
-   public int getDrawerLockMode(android.view.View);
+-  public void printBitmap(java.lang.String, android.graphics.Bitmap);
+-  public void printBitmap(java.lang.String, android.net.Uri) throws java.io.FileNotFoundException;
+-}
+diff -U 0 -N support-v4-19.0.0/android.support.v4.widget.DrawerLayout support-v4-19.1.0/android.support.v4.widget.DrawerLayout
+--- support-v4-19.0.0/android.support.v4.widget.DrawerLayout	2014-06-26 19:59:59.000000000 -0700
++++ support-v4-19.1.0/android.support.v4.widget.DrawerLayout	2014-06-26 19:59:59.000000000 -0700
+@@ -19,0 +20,2 @@
 +  public void setDrawerTitle(int, java.lang.CharSequence);
 +  public java.lang.CharSequence getDrawerTitle(int);
-   public void requestLayout();
-   public void computeScroll();
-   public boolean onInterceptTouchEvent(android.view.MotionEvent);
-@@ -1763,6 +1758,25 @@
-   public void draw(android.graphics.Canvas);
-   public android.view.ViewGroup$LayoutParams generateLayoutParams(android.util.AttributeSet);
- }
-+public interface android.support.v4.widget.SwipeRefreshLayout$OnRefreshListener {
-+  public abstract void onRefresh();
-+}
+diff -U 0 -N support-v4-19.0.0/android.support.v4.widget.SwipeRefreshLayout support-v4-19.1.0/android.support.v4.widget.SwipeRefreshLayout
+--- support-v4-19.0.0/android.support.v4.widget.SwipeRefreshLayout	1969-12-31 16:00:00.000000000 -0800
++++ support-v4-19.1.0/android.support.v4.widget.SwipeRefreshLayout	2014-06-26 19:59:59.000000000 -0700
+@@ -0,0 +1,16 @@
 +public class android.support.v4.widget.SwipeRefreshLayout extends android.view.ViewGroup {
 +  public android.support.v4.widget.SwipeRefreshLayout(android.content.Context);
 +  public android.support.v4.widget.SwipeRefreshLayout(android.content.Context, android.util.AttributeSet);
@@ -80,9 +65,13 @@ $ ./jardiff.py support-v4-19.0.0.jar support-v4-19.1.0.jar
 +  public void requestDisallowInterceptTouchEvent(boolean);
 +  public boolean onTouchEvent(android.view.MotionEvent);
 +}
- public abstract class android.support.v4.widget.ViewDragHelper$Callback {
-   public android.support.v4.widget.ViewDragHelper$Callback();
-   public void onViewDragStateChanged(int);
+diff -U 0 -N support-v4-19.0.0/android.support.v4.widget.SwipeRefreshLayout$OnRefreshListener support-v4-19.1.0/android.support.v4.widget.SwipeRefreshLayout$OnRefreshListener
+--- support-v4-19.0.0/android.support.v4.widget.SwipeRefreshLayout$OnRefreshListener	1969-12-31 16:00:00.000000000 -0800
++++ support-v4-19.1.0/android.support.v4.widget.SwipeRefreshLayout$OnRefreshListener	2014-06-26 19:59:59.000000000 -0700
+@@ -0,0 +1,3 @@
++public interface android.support.v4.widget.SwipeRefreshLayout$OnRefreshListener {
++  public abstract void onRefresh();
++}
 ```
 
 

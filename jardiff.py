@@ -3,6 +3,7 @@
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -29,57 +30,73 @@ def _javap_public(files):
   return subprocess.check_output(['javap', '-public'] + files)
 
 
-def _only_public_classes(info):
-  return re.sub(r'Compiled from ".*?\.java"\n(?!public).*?\n(?:  .*\n)*}\n', '', info, flags=re.MULTILINE)
+def _split_info_into_infos(info):
+  original = re.findall(r'Compiled from ".*?\.java"\n.*?\n(?:  .*\n)*}\n', info, flags=re.MULTILINE)
+  infos = {}
+  for info in original:
+    lines = str(info).split('\n')[1:]
+    header = lines[0]
+    if not header.startswith('public '):
+      continue
+    match = re.match(r'(?:public |abstract |class |interface |final )+([^ ]+) .*', header)
+    name = match.group(1)
+    infos[name] = '\n'.join(lines)
+  return infos
 
 
-def _remove_compiled_from(info):
-  return re.sub(r'Compiled from ".*?\.java"\n', '', info, flags=re.MULTILINE)
+def _write_infos_to_temp(temp_folder, original_stat, infos):
+  times = (original_stat[stat.ST_ATIME], original_stat[stat.ST_MTIME])
+
+  for name, info in infos.items():
+    out = os.path.join(temp_folder, name)
+    with open(out, 'w') as f:
+      f.write(info)
+    os.utime(out, times)
 
 
-def write_to_temp(data):
-  _, destination = tempfile.mkstemp()
-  with open(destination, 'w') as f:
-    f.write(data)
-  return destination
+def _exec_diff(dir, one_path, two_path):
+  one_path = os.path.relpath(one_path, dir)
+  two_path = os.path.relpath(two_path, dir)
+  subprocess.call(['diff', '-U', '0', '-N', one_path, two_path], cwd=dir)
 
 
-def _exec_diff(one_label, one_file, two_label, two_file):
-  subprocess.call(['diff', '-uN', '--label', one_label, one_file, '--label', two_label, two_file])
+def process_archive(temp_folder, jar):
+  name = os.path.splitext(os.path.basename(jar))[0]
+  jar_stat = os.stat(jar)
+  archive_folder = os.path.join(temp_folder, name)
+  os.mkdir(archive_folder)
 
-
-def process_archive(jar):
+  unaar = None
   if jar.endswith('.aar'):
     unaar = _unzip(jar)
-    aarjar = os.path.join(unaar, 'classes.jar')
-    temp = process_archive(aarjar)
-    shutil.rmtree(unaar)
-    return temp
+    jar = os.path.join(unaar, 'classes.jar')
 
   unjar = _unzip(jar)
   classes = _class_files(unjar)
   info = _javap_public(classes)
-  info = _only_public_classes(info)
-  info = _remove_compiled_from(info)
-  temp = write_to_temp(info)
+  infos = _split_info_into_infos(info)
+
+  _write_infos_to_temp(archive_folder, jar_stat, infos)
+
   shutil.rmtree(unjar)
-  return temp
+  if unaar is not None:
+    shutil.rmtree(unaar)
+
+  return archive_folder
 
 if __name__ == '__main__':
   if len(sys.argv) != 3:
     print('Usage: %s old.jar new.jar' % sys.argv[0])
     sys.exit(1)
 
+  temp_folder = tempfile.mkdtemp()
 
   old_archive = sys.argv[1]
-  old_info_file = process_archive(old_archive)
-  old_label = os.path.basename(old_archive)
+  old_data = process_archive(temp_folder, old_archive)
 
   new_archive = sys.argv[2]
-  new_info_file = process_archive(new_archive)
-  new_label = os.path.basename(new_archive)
+  new_data = process_archive(temp_folder, new_archive)
 
-  _exec_diff(old_label, old_info_file, new_label, new_info_file)
+  _exec_diff(temp_folder, old_data, new_data)
 
-  os.remove(old_info_file)
-  os.remove(new_info_file)
+  shutil.rmtree(temp_folder)
