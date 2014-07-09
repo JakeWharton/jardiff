@@ -27,7 +27,7 @@ def _class_files(path):
 
 
 def _javap_public(files):
-  return subprocess.check_output(['javap', '-public'] + files)
+  return str(subprocess.check_output(['javap', '-public'] + files))
 
 
 def _split_info_into_infos(info):
