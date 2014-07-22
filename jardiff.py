@@ -26,8 +26,16 @@ def _class_files(path):
   return classes
 
 
+def _chunks(items, chunk_size):
+  for i in range(0, len(items), chunk_size):
+    yield items[i:i + chunk_size]
+
+
 def _javap_public(files):
-  return str(subprocess.check_output(['javap', '-public'] + files))
+  results = []
+  for chunk in _chunks(files, 200):
+    results.append(str(subprocess.check_output(['javap', '-public'] + chunk)))
+  return '\n'.join(results)
 
 
 def _split_info_into_infos(info):
