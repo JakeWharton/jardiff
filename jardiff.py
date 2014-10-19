@@ -69,7 +69,10 @@ def _exec_diff(base_path, one_path, two_path):
 
 
 def process_archive(temp_folder, jar):
-  name = os.path.splitext(os.path.basename(jar))[0]
+  jar_basename = os.path.splitext(os.path.basename(jar))[0]
+  filepath_hash = hex(hash(jar))[-8:]
+  name = '%s_%s' % (jar_basename, filepath_hash)
+
   jar_stat = os.stat(jar)
   archive_folder = os.path.join(temp_folder, name)
   os.mkdir(archive_folder)
