@@ -39,7 +39,8 @@ def _javap_public(files):
 
 
 def _split_info_into_infos(info):
-  original = re.findall(r'Compiled from ".*?\.java"\n.*?\n(?:  .*\n)*}\n', info, flags=re.MULTILINE)
+  original = re.findall(r'Compiled from ".*?\.(?:java|groovy)"\n.*?\n(?:  .*\n)*}\n', info,
+                        flags=re.MULTILINE)
   infos = {}
   for info in original:
     lines = str(info).split('\n')[1:]
