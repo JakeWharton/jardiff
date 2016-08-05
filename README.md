@@ -8,7 +8,7 @@ Android's AAR format.
 Both `javap` and `diff` must be available on your PATH.
 
 ```
-$ ./jardiff.py support-v4-19.0.0.jar support-v4-19.1.0.jar
+$ ./jardiff.py support-v4-19.0.0.jar support-v4-19.1.0.jar [/path/to/diff_script]
 ```
 ```diff
 diff -U 0 -N support-v4-19.0.0/android.support.v4.app.FragmentManager support-v4-19.1.0/android.support.v4.app.FragmentManager

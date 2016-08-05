@@ -97,18 +97,22 @@ def process_archive(temp_folder, jar):
   return archive_folder
 
 
-def _main(old_archive, new_archive):
+def _main(old_archive, new_archive, diff_script=None):
   temp_folder = tempfile.mkdtemp()
 
   old_data = process_archive(temp_folder, old_archive)
   new_data = process_archive(temp_folder, new_archive)
-  _exec_diff(temp_folder, old_data, new_data)
+
+  if diff_script:
+    subprocess.call('%s %s %s %s' % (diff_script, temp_folder, old_data, new_data), shell = True)
+  else:
+    _exec_diff(temp_folder, old_data, new_data)
 
   shutil.rmtree(temp_folder)
 
 
 if __name__ == '__main__':
-  if len(sys.argv) != 3:
-    print('Usage: %s old.jar new.jar' % sys.argv[0])
+  if len(sys.argv) not in [3, 4]:
+    print('Usage: %s old.aar new.aar [diff_script]' % sys.argv[0])
     sys.exit(1)
-  _main(sys.argv[1], sys.argv[2])
+  _main(*sys.argv[1:])
